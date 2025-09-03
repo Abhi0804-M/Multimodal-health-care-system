@@ -37,5 +37,9 @@ Multimodal-Healthcare-System/
 │── requirements.txt      # Dependencies
 │── README.md             # Project documentation
 
+## ⚙ Installation & Setup  
+
+1. *Clone the repository*  
+```bash
 git clone https://github.com/your-username/Multimodal-Healthcare-System.git
 cd Multimodal-Healthcare-System
