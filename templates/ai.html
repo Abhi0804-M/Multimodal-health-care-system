@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mandatory AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .typing-indicator span {
+            animation: pulse 1.5s infinite ease-in-out;
+        }
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        .message-enter {
+            animation: messageEnter 0.3s ease-out;
+        }
+        @keyframes messageEnter {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+        }
+        .chat-container {
+            height: calc(100vh - 160px);
+        }
+        @media (max-width: 640px) {
+            .chat-container {
+                height: calc(100vh - 140px);
+            }
+        }
+        .mic-active { animation: pulse 1.5s infinite; color: #ef4444; }
+    .tooltip {
+      position: absolute;
+      left: 120%;
+      transform: translateX(-50%);
+      bottom: 120%;
+      background: #222;
+      color: #fff;
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+      white-space: nowrap;
+      z-index: 1000;
+    }
+    .tooltip-visible { opacity: 1; pointer-events: auto; }
+    .mic-popup {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: 120%;
+      background: #fff;
+      color: #ef4444;
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-weight: 600;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+      font-size: 1rem;
+      z-index: 30;
+      border: 1px solid #ef4444;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      animation: fadeIn 0.25s;
+    }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .condition-card {
+            transition: all 0.2s ease;
+        }
+        .condition-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        .suggestion-chip {
+            transition: all 0.2s ease;
+        }
+        .suggestion-chip:hover {
+            background-color: #e9d5ff;
+        }
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="min-h-screen flex flex-col">
+        <header class="gradient-bg text-white p-4 shadow-lg">
+            <div class="container mx-auto flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-md">
+                        <i class="fas fa-heartbeat text-indigo-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold">Mandatory AI</h1>
+                        <p class="text-xs opacity-80">Your personal health assistant</p>
+                    </div>
+                </div>
+                <button id="info-button" class="p-2 rounded-full bg-white bg-opacity-20 hover:bg-opacity-30 transition">
+                    <i class="fas fa-info-circle"></i>
+                </button>
+            </div>
+        </header>
+
+        <main class="flex-1 container mx-auto p-4 max-w-4xl">
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden flex flex-col h-full border border-gray-200">
+                <!-- Welcome message -->
+                <div id="welcome-message" class="p-6 text-center bg-gradient-to-r from-indigo-50 to-purple-50">
+                    <div class="w-16 h-16 mx-auto rounded-full bg-white shadow-md flex items-center justify-center mb-4">
+                        <i class="fas fa-comment-medical text-indigo-600 text-2xl"></i>
+                    </div>
+                    <h2 class="text-xl font-bold text-gray-800 mb-2">How can I help you today?</h2>
+                    <p class="text-gray-600 mb-4">Describe your symptoms or health concerns and I'll do my best to assist you.</p>
+                    <div class="flex flex-wrap justify-center gap-2 max-w-md mx-auto">
+                        <button class="suggestion-chip px-3 py-1.5 bg-indigo-100 text-indigo-800 rounded-full text-sm font-medium">
+                            <i class="fas fa-wave-square"></i> Anemia Detection
+                        </button>
+                        <button class="suggestion-chip px-3 py-1.5 bg-indigo-100 text-indigo-800 rounded-full text-sm font-medium">
+                            <i class="fas fa-heart-pulse mr-1"></i> Skin Disease Detection
+                        </button>
+                        <!-- <button class="suggestion-chip px-3 py-1.5 bg-indigo-100 text-indigo-800 rounded-full text-sm font-medium">
+                            <i class="fas fa-exclamation-triangle"></i> Pneumonia Detection
+                        </button>
+                        <button class="suggestion-chip px-3 py-1.5 bg-indigo-100 text-indigo-800 rounded-full text-sm font-medium">
+                            <i class="fas fa-brain mr-1"></i> Brain Tumor Detection
+                        </button> -->
+                    </div>
+                </div>
+                <div class="chat-container overflow-y-auto p-4 space-y-4 scrollbar-hide" id="chat-messages"></div>
+                <div class="border-t border-gray-200 p-4 bg-gray-50">
+                    <div class="flex items-center space-x-2">
+
+                        <div class="relative">
+                        <button id="mic-button" class="p-3 rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300 transition focus:outline-none relative" aria-label="Voice input" type="button">
+                            <i class="fas fa-microphone"></i>
+                        </button>
+                        <!-- Tooltip (shows on hover) -->
+                        <div id="mic-tooltip" class="tooltip">Click to speak</div>
+                        <!-- Popup (shows when listening) -->
+                        <div id="mic-popup" class="mic-popup" style="display:none;">
+                            <i class="fas fa-wave-square animate-pulse"></i> Listening... <span class="text-xs font-normal ml-2">(Click to stop)</span>
+                        </div>
+                        </div>
+        
+                        <div class="flex-1 relative">
+                            <textarea
+                                id="user-input"
+                                rows="1"
+                                placeholder="Describe your symptoms..."
+                                class="w-full p-3 pr-10 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none"
+                                style="min-height: 44px; max-height: 120px;"
+                            ></textarea>
+                            <button id="clear-button" class="absolute right-10 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 hidden">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <button id="send-button" class="p-3 rounded-full gradient-bg text-white hover:opacity-90 transition shadow-md">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                    <!-- <div class="mt-2 text-xs text-gray-500 text-center">
+                        <p>Mandatory AI does not provide medical diagnosis. Always consult a healthcare professional.</p>
+                    </div> -->
+                </div>
+            </div>
+        </main>
+
+        <footer class="bg-white border-t border-gray-200 py-3 px-4 text-center text-sm text-gray-500">
+            <p>© 2025 Mandatory AI. All rights reserved. 
+                <!-- <a href="#" class="text-indigo-600 hover:underline">Privacy Policy</a> -->
+                </p>
+        </footer>
+    </div>
+
+    <!-- Info Modal -->
+    <div id="info-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-xl max-w-md w-full mx-4 p-6 shadow-xl">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold text-gray-800">About Mandatory AI</h3>
+                <button id="close-modal" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="space-y-4 text-gray-700">
+                <p>Mandatory AI is an experimental assistant designed to help you understand potential health concerns based on your symptoms.</p>
+                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-exclamation-triangle text-yellow-500"></i>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm text-yellow-700">
+                                <strong>Important:</strong> This System is designed to support and enhance health awareness. For personalized care, we recommend consulting a qualified medical professional.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <p class="text-sm"></p>
+            </div>The system can currently recognize symptoms related to: Anemia and Skin Disease.
+            <div class="mt-6 flex justify-end">
+                <button id="understand-button" class="px-4 py-2 gradient-bg text-white rounded-lg hover:opacity-90">
+                    I Understand
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
+
+        // Gemini 2.0 Flash Model
+        const genAI = new GoogleGenerativeAI("AIzaSyBnzON3dMfq6nZj4frMfVuI3famI5Xw0WE");
+        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+
+        // DOM Elements
+        const userInput = document.getElementById('user-input');
+        const sendButton = document.getElementById('send-button');
+        const chatMessages = document.getElementById('chat-messages');
+        const micButton = document.getElementById('mic-button');
+        const micTooltip = document.getElementById('mic-tooltip');
+        const micPopup = document.getElementById('mic-popup');
+        const clearButton = document.getElementById('clear-button');
+        const infoButton = document.getElementById('info-button');
+        const infoModal = document.getElementById('info-modal');
+        const closeModal = document.getElementById('close-modal');
+        const understandButton = document.getElementById('understand-button');
+        const welcomeMessage = document.getElementById('welcome-message');
+        const suggestionChips = document.querySelectorAll('.suggestion-chip');
+
+        // Speech Recognition Variables
+        let recognition = null;
+        let isListening = false;
+        micButton.addEventListener('mouseenter', () => {
+      if (!isListening) {
+        micTooltip.classList.add('tooltip-visible');
+      }
+    });
+        micButton.addEventListener('mouseleave', () => {
+      micTooltip.classList.remove('tooltip-visible');
+    });
+        // Event Listeners
+        sendButton.addEventListener('click', sendMessage);
+        userInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        clearButton.addEventListener('click', () => {
+            userInput.value = '';
+            userInput.style.height = '44px';
+            clearButton.classList.add('hidden');
+        });
+
+        // Speech Recognition Functions
+        function initSpeechRecognition() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                addMessage("Your browser doesn't support speech recognition. Try Chrome or Edge.", 'ai');
+                return false;
+            }
+            recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+
+            recognition.onstart = function() {
+                isListening = true;
+                micButton.classList.add('mic-active');
+                userInput.placeholder = "Listening...";
+            };
+
+            recognition.onresult = function(event) {
+                const transcript = event.results[0][0].transcript;
+                userInput.value = transcript;
+                micButton.classList.remove('mic-active');
+                userInput.placeholder = "Describe your symptoms...";
+                isListening = false;
+                sendMessage();
+            };
+
+            recognition.onerror = function(event) {
+                console.error('Speech recognition error', event.error);
+                micButton.classList.remove('mic-active');
+                userInput.placeholder = "Describe your symptoms...";
+                isListening = false;
+            };
+
+            recognition.onend = function() {
+                micButton.classList.remove('mic-active');
+                userInput.placeholder = "Describe your symptoms...";
+                isListening = false;
+            };
+
+            return true;
+        }
+
+        function toggleSpeechRecognition() {
+            if (!recognition) {
+                if (!initSpeechRecognition()) return;
+            }
+            if (isListening) {
+                recognition.stop();
+                isListening = false;
+            } else {
+                try {
+                    recognition.start();
+                } catch (e) {
+                    console.error('Speech recognition error:', e);
+                    addMessage("Couldn't access your microphone. Please check permissions.", 'ai');
+                }
+            }
+        }
+        function startListening() {
+            isListening = true;
+            micButton.classList.add('mic-active');
+            micTooltip.classList.remove('tooltip-visible');
+            micPopup.style.display = 'flex';
+            recognition.start();
+            }
+
+        function stopListening() {
+            isListening = false;
+            micButton.classList.remove('mic-active');
+            micPopup.style.display = 'none';
+            try { recognition.stop(); } catch {}
+            }
+
+        micButton.addEventListener('click', toggleSpeechRecognition);
+
+        infoButton.addEventListener('click', () => infoModal.classList.remove('hidden'));
+        closeModal.addEventListener('click', () => infoModal.classList.add('hidden'));
+        understandButton.addEventListener('click', () => infoModal.classList.add('hidden'));
+
+        userInput.addEventListener('input', () => {
+            clearButton.classList.toggle('hidden', userInput.value === '');
+            adjustTextareaHeight();
+        });
+
+        suggestionChips.forEach(chip => {
+            chip.addEventListener('click', () => {
+                userInput.value = chip.textContent.trim();
+                userInput.focus();
+                adjustTextareaHeight();
+            });
+        });
+
+        function adjustTextareaHeight() {
+            userInput.style.height = 'auto';
+            userInput.style.height = Math.min(userInput.scrollHeight, 120) + 'px';
+        }
+
+        function addMessage(content, sender) {
+            if (sender === 'user' && welcomeMessage) {
+                welcomeMessage.classList.add('hidden');
+            }
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message-enter flex space-x-3 ${sender === 'user' ? 'justify-end' : ''}`;
+            const avatarDiv = document.createElement('div');
+            avatarDiv.className = 'flex-shrink-0';
+            const avatarInner = document.createElement('div');
+            avatarInner.className = `w-8 h-8 rounded-full flex items-center justify-center shadow-sm ${sender === 'user' ? 'bg-blue-100' : 'bg-indigo-100'}`;
+            const avatarIcon = document.createElement('i');
+            avatarIcon.className = sender === 'user' ? 'fas fa-user text-blue-600' : 'fas fa-robot text-indigo-600';
+            avatarInner.appendChild(avatarIcon);
+            avatarDiv.appendChild(avatarInner);
+
+            const contentDiv = document.createElement('div');
+            contentDiv.className = `${sender === 'user' ? 'bg-blue-50' : 'bg-indigo-50'} rounded-lg p-3 max-w-[80%] shadow-sm`;
+            const messageContent = document.createElement('p');
+            messageContent.className = 'text-gray-800';
+            if (sender === 'ai') {
+                messageContent.innerHTML = content;
+            } else {
+                messageContent.textContent = content;
+            }
+            contentDiv.appendChild(messageContent);
+
+            if (sender === 'user') {
+                messageDiv.appendChild(contentDiv);
+                messageDiv.appendChild(avatarDiv);
+            } else {
+                messageDiv.appendChild(avatarDiv);
+                messageDiv.appendChild(contentDiv);
+            }
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function showTypingIndicator() {
+            const indicator = document.createElement('div');
+            indicator.id = 'typing-indicator';
+            indicator.className = 'flex space-x-3';
+            const avatarDiv = document.createElement('div');
+            avatarDiv.className = 'flex-shrink-0';
+            const avatarInner = document.createElement('div');
+            avatarInner.className = 'w-8 h-8 rounded-full flex items-center justify-center shadow-sm bg-indigo-100';
+            const avatarIcon = document.createElement('i');
+            avatarIcon.className = 'fas fa-robot text-indigo-600';
+            avatarInner.appendChild(avatarIcon);
+            avatarDiv.appendChild(avatarInner);
+            const dotsDiv = document.createElement('div');
+            dotsDiv.className = 'bg-indigo-50 rounded-lg p-3 max-w-[80%] shadow-sm typing-indicator';
+            dotsDiv.innerHTML = '<span>.</span><span>.</span><span>.</span>';
+            indicator.appendChild(avatarDiv);
+            indicator.appendChild(dotsDiv);
+            chatMessages.appendChild(indicator);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function removeTypingIndicator() {
+            const indicator = document.getElementById('typing-indicator');
+            if (indicator) indicator.remove();
+        }
+
+        async function sendMessage() {
+            const userMessage = userInput.value.trim();
+            if (!userMessage) return;
+            addMessage(userMessage, 'user');
+            userInput.value = '';
+            userInput.style.height = '44px';
+            clearButton.classList.add('hidden');
+            showTypingIndicator();
+
+            try {
+                const prompt = `You are a medical AI assistant named Mandatory AI. If the user greets you, you also greet them. Respond to the user's question about their health or symptoms. User: ${userMessage}
+                Determine if it clearly matches any one of the following two categories: 
+                1) Anemia
+                2) Skin Disease Detection.
+                
+                If only the word Detection is given then respond with: "We have Multiple Models to help you with it." and list Skin and Anemia and ask which one do you want?.
+                If the user enters any disease followed by 'detection' word then check with the two categories i told you before.
+
+                If it matches, respond with the user has (that any one of the Two disease ONLY with the model name exactly as written above) and give them Some brief info in 2 to 3 lines.
+                Do not talk about treatment or diagnosis, Just say in multiple variations and correct format like We have a Model to help you with it. (Write this in a seperate line)
+                If it does NOT match any and the user input is irrelavant, respond with: "The system can currently recognize upto 2 Diseases, Check the About button ℹ️ for more info." only not any other things.`;
+                const result = await model.generateContent(prompt);
+                const aiMessage = result.response.text();
+                removeTypingIndicator();
+                addMessage(aiMessage, 'ai');
+
+                const diseases = [ "Anemia", "Skin Disease"];
+                let detectedDisease = null;
+                for (let disease of diseases) {
+                    if (aiMessage.includes(disease)) {
+                        detectedDisease = disease;
+                        break;
+                    }}
+                if (detectedDisease) {
+            console.log("Detected Disease:", detectedDisease);
+            fetch('/r_model', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ disease: detectedDisease })
+            })
+            .then(response => response.json())
+            .then(data => {
+                addMessage(data.ai_response, 'ai');
+            })
+            .catch(error => {
+                addMessage("Error connecting to Mandatory AI model.", 'ai');
+            });
+        }
+
+    } catch (error) {
+        removeTypingIndicator();
+        addMessage("Sorry, I'm having trouble connecting to Mandatory AI.", 'ai');
+    }
+}
+    </script>
+</body>
+
+</html>

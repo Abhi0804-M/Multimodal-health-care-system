@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Capture Palm Image</title>
+    <style>
+        body {
+            background-color: black; /* Set black background */
+            color: white; /* Set text color to white */
+            text-align: center; /* Center align text */
+            padding-top: 50px; /* Add padding to top */
+        }
+        .container {
+            margin: auto; /* Center the container */
+            width: 80%; /* Set width of the container */
+        }
+        #startRecording {
+            background-color: white; /* Set button background color */
+            color: black; /* Set button text color */
+            border: none; /* Remove button border */
+            padding: 10px 20px; /* Add padding */
+            cursor: pointer; /* Set cursor to pointer */
+            font-size: 18px; /* Increase font size for better visibility */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Capture Palm Image</h1>
+        <!-- Button to start recording -->
+        <button id="startRecording" onclick= "navigateTo('start_capture')">Start Recording</button>
+    </div>
+
+    <script>
+    
+        function navigateTo(page) {
+            window.location.href = '/'+page;
+            const urlParams = new URLSearchParams(window.location.search);
+            const method = urlParams.get('method');
+            document.getElementById('method').value = method;
+        }
+        </script>
+</body>
+</html>

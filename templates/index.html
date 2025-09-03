@@ -1,0 +1,1251 @@
+<!DOCTYPE HTML>
+
+<html>
+	<head>
+		<title>Home Page</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}" />
+		<noscript><link rel="stylesheet" href="{{ url_for('static', filename='noscript.css')}}" /></noscript>
+		<style>
+			.toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #4caf50;
+      color: white;
+      padding: 16px 24px;
+      border-radius: 8px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+      font-size: 16px;
+      opacity: 0;
+      transform: translateX(100%);
+      animation: slideIn 0.5s forwards, fadeOut 0.5s 3.5s forwards;
+      z-index: 9999;
+    }
+
+    @keyframes slideIn {
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes fadeOut {
+      to {
+        opacity: 0;
+        transform: translateX(100%);
+      }
+    }
+
+    
+.container-ai-input {
+  --perspective: 1000px;
+  --translateY: 45px;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -2.5rem;
+  bottom: -2.5rem;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  transform-style: preserve-3d;
+}
+
+.container-wrap {
+  display: flex;
+  align-items: center;
+  justify-items: center;
+  position:absolute;
+  left: 50%;
+  top: 70%;
+  transform: translateX(-50%) translateY(-50%);
+  z-index: 9;
+  transform-style: preserve-3d;
+  cursor: pointer;
+  padding: 4px;
+  transition: all 0.3s ease;
+}
+
+.container-wrap:hover {
+  padding: 0;
+}
+
+.container-wrap:active {
+  transform: translateX(-50%) translateY(-50%) scale(0.95);
+}
+
+.container-wrap:after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translateX(-50%) translateY(-55%);
+  width: 12rem;
+  height: 11rem;
+  background-color: #dedfe0;
+  border-radius: 3.2rem;
+  transition: all 0.3s ease;
+}
+
+.container-wrap:hover:after {
+  transform: translateX(-50%) translateY(-50%);
+  height: 12rem;
+}
+
+.container-wrap input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+}
+
+
+
+
+.card {
+  width: 100%;
+  height: 100%;
+  /* background-color: #fff; */
+  transform-style: preserve-3d;
+  will-change: transform;
+  transition: all 0.6s ease;
+  border-radius: 3rem;
+  display: flex;
+  align-items: center;
+  transform: translateZ(50px);
+  justify-content: center;
+}
+
+.card:hover {
+  box-shadow:
+    0 10px 40px rgba(0, 0, 60, 0.25),
+    inset 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.background-blur-balls {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  width: 100%;
+  height: 100%;
+  z-index: -10;
+  border-radius: 3rem;
+  transition: all 0.3s ease;
+  background-color: rgba(255, 255, 255, 0.8);
+  overflow: hidden;
+}
+.balls {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  animation: rotate-background-balls 10s linear infinite;
+}
+
+.container-wrap:hover .balls {
+  animation-play-state: paused;
+}
+
+.background-blur-balls .ball {
+  width: 6rem;
+  height: 6rem;
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(30px);
+}
+
+.background-blur-balls .ball.violet {
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #9147ff;
+}
+
+.background-blur-balls .ball.green {
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #34d399;
+}
+
+.background-blur-balls .ball.rosa {
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  background-color: #ec4899;
+}
+
+.background-blur-balls .ball.cyan {
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  background-color: #05e0f5;
+}
+
+.content-card {
+  width: 12rem;
+  height: 12rem;
+  display: flex;
+  border-radius: 3rem;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.background-blur-card {
+  width: 100%;
+  height: 100%;
+  backdrop-filter: blur(50px);
+}
+
+.eyes {
+  position: absolute;
+  left: 50%;
+  bottom: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 52px;
+  gap: 2rem;
+  transition: all 0.3s ease;
+
+  & .eye {
+    width: 26px;
+    height: 52px;
+    background-color: #fff;
+    border-radius: 16px;
+    animation: animate-eyes 10s infinite linear;
+    transition: all 0.3s ease;
+  }
+}
+
+.eyes.happy {
+  display: none;
+  color: #fff;
+  gap: 0;
+
+  & svg {
+    width: 60px;
+  }
+}
+
+.container-wrap:hover .eyes .eye {
+  display: none;
+}
+
+.container-wrap:hover .eyes.happy {
+  display: flex;
+}
+
+.container-ai-chat {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  padding: 6px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+
+
+
+
+
+
+.area:nth-child(15):hover ~ .container-wrap .card,
+.area:nth-child(15):hover ~ .container-wrap .eyes .eye {
+  transform: perspective(var(--perspective)) rotateX(-15deg) rotateY(15deg)
+    translateZ(var(--translateY)) scale3d(1, 1, 1);
+}
+.area:nth-child(14):hover ~ .container-wrap .card,
+.area:nth-child(14):hover ~ .container-wrap .eyes .eye {
+  transform: perspective(var(--perspective)) rotateX(-15deg) rotateY(7deg)
+    translateZ(var(--translateY)) scale3d(1, 1, 1);
+}
+.area:nth-child(13):hover ~ .container-wrap .card,
+.area:nth-child(13):hover ~ .container-wrap .eyes .eye {
+  transform: perspective(var(--perspective)) rotateX(-15deg) rotateY(0)
+    translateZ(var(--translateY)) scale3d(1, 1, 1);
+}
+.area:nth-child(12):hover ~ .container-wrap .card,
+.area:nth-child(12):hover ~ .container-wrap .eyes .eye {
+  transform: perspective(var(--perspective)) rotateX(-15deg) rotateY(-7deg)
+    translateZ(var(--translateY)) scale3d(1, 1, 1);
+}
+.area:nth-child(11):hover ~ .container-wrap .card,
+.area:nth-child(11):hover ~ .container-wrap .eyes .eye {
+  transform: perspective(var(--perspective)) rotateX(-15deg) rotateY(-15deg)
+    translateZ(var(--translateY)) scale3d(1, 1, 1);
+}
+
+.area:nth-child(10):hover ~ .container-wrap .card,
+.area:nth-child(10):hover ~ .container-wrap .eyes .eye {
+  transform: perspective(var(--perspective)) rotateX(0) rotateY(15deg)
+    translateZ(var(--translateY)) scale3d(1, 1, 1);
+}
+.area:nth-child(9):hover ~ .container-wrap .card,
+.area:nth-child(9):hover ~ .container-wrap .eyes .eye {
+  transform: perspective(var(--perspective)) rotateX(0) rotateY(7deg)
+    translateZ(var(--translateY)) scale3d(1, 1, 1);
+}
+.area:nth-child(8):hover ~ .container-wrap .card,
+.area:nth-child(8):hover ~ .container-wrap .eyes .eye {
+  transform: perspective(var(--perspective)) rotateX(0) rotateY(0)
+    translateZ(var(--translateY)) scale3d(1, 1, 1);
+}
+.area:nth-child(7):hover ~ .container-wrap .card,
+.area:nth-child(7):hover ~ .container-wrap .eyes .eye {
+  transform: perspective(var(--perspective)) rotateX(0) rotateY(-7deg)
+    translateZ(var(--translateY)) scale3d(1, 1, 1);
+}
+.area:nth-child(6):hover ~ .container-wrap .card,
+.area:nth-child(6):hover ~ .container-wrap .eyes .eye {
+  transform: perspective(var(--perspective)) rotateX(0) rotateY(-15deg)
+    translateZ(var(--translateY)) scale3d(1, 1, 1);
+}
+
+.area:nth-child(5):hover ~ .container-wrap .card,
+.area:nth-child(5):hover ~ .container-wrap .eyes .eye {
+  transform: perspective(var(--perspective)) rotateX(15deg) rotateY(15deg)
+    translateZ(var(--translateY)) scale3d(1, 1, 1);
+}
+.area:nth-child(4):hover ~ .container-wrap .card,
+.area:nth-child(4):hover ~ .container-wrap .eyes .eye {
+  transform: perspective(var(--perspective)) rotateX(15deg) rotateY(7deg)
+    translateZ(var(--translateY)) scale3d(1, 1, 1);
+}
+.area:nth-child(3):hover ~ .container-wrap .card,
+.area:nth-child(3):hover ~ .container-wrap .eyes .eye {
+  transform: perspective(var(--perspective)) rotateX(15deg) rotateY(0)
+    translateZ(var(--translateY)) scale3d(1, 1, 1);
+}
+.area:nth-child(2):hover ~ .container-wrap .card,
+.area:nth-child(2):hover ~ .container-wrap .eyes .eye {
+  transform: perspective(var(--perspective)) rotateX(15deg) rotateY(-7deg)
+    translateZ(var(--translateY)) scale3d(1, 1, 1);
+}
+.area:nth-child(1):hover ~ .container-wrap .card,
+.area:nth-child(1):hover ~ .container-wrap .eyes .eye {
+  transform: perspective(var(--perspective)) rotateX(15deg) rotateY(-15deg)
+    translateZ(var(--translateY)) scale3d(1, 1, 1);
+}
+
+.area:nth-child(15):hover
+  ~ .container-wrap
+  .card
+  .container-ai-chat
+  .chat
+  .options
+  button,
+.area:nth-child(15):hover
+  ~ .container-wrap
+  .card
+  .container-ai-chat
+  .chat
+  .chat-bot {
+  transform: perspective(var(--perspective)) rotateX(-10deg) rotateY(8deg)
+    translateZ(var(--translateY)) scale3d(1, 1, 1);
+}
+
+.area:nth-child(14):hover
+  ~ .container-wrap
+  .card
+  .container-ai-chat
+  .chat
+  .options
+  button,
+.area:nth-child(14):hover
+  ~ .container-wrap
+  .card
+  .container-ai-chat
+  .chat
+  .chat-bot {
+  transform: perspective(var(--perspective)) rotateX(-10deg) rotateY(4deg)
+    translateZ(var(--translateY)) scale3d(1, 1, 1);
+}
+
+.area:nth-child(13):hover
+  ~ .container-wrap
+  .card
+  .container-ai-chat
+  .chat
+  .options
+  button,
+.area:nth-child(13):hover
+  ~ .container-wrap
+  .card
+  .container-ai-chat
+  .chat
+  .chat-bot {
+  transform: perspective(var(--perspective)) rotateX(-10deg) rotateY(0deg)
+    translateZ(var(--translateY)) scale3d(1, 1, 1);
+}
+
+.area:nth-child(12):hover
+  ~ .container-wrap
+  .card
+  .container-ai-chat
+  .chat
+  .options
+  button,
+.area:nth-child(12):hover
+  ~ .container-wrap
+  .card
+  .container-ai-chat
+  .chat
+  .chat-bot {
+  transform: perspective(var(--perspective)) rotateX(-10deg) rotateY(-4deg)
+    translateZ(var(--translateY)) scale3d(1, 1, 1);
+}
+
+.area:nth-child(11):hover
+  ~ .container-wrap
+  .card
+  .container-ai-chat
+  .chat
+  .options
+  button,
+.area:nth-child(11):hover
+  ~ .container-wrap
+  .card
+  .container-ai-chat
+  .chat
+  .chat-bot {
+  transform: perspective(var(--perspective)) rotateX(-10deg) rotateY(-8deg)
+    translateZ(var(--translateY)) scale3d(1, 1, 1);
+}
+
+.area:nth-child(10):hover
+  ~ .container-wrap
+  .card
+  .container-ai-chat
+  .chat
+  .options
+  button,
+.area:nth-child(10):hover
+  ~ .container-wrap
+  .card
+  .container-ai-chat
+  .chat
+  .chat-bot {
+  transform: perspective(var(--perspective)) rotateX(0deg) rotateY(8deg)
+    translateZ(var(--translateY)) scale3d(1, 1, 1);
+}
+
+.area:nth-child(9):hover
+  ~ .container-wrap
+  .card
+  .container-ai-chat
+  .chat
+  .options
+  button,
+.area:nth-child(9):hover
+  ~ .container-wrap
+  .card
+  .container-ai-chat
+  .chat
+  .chat-bot {
+  transform: perspective(var(--perspective)) rotateX(0deg) rotateY(4deg)
+    translateZ(var(--translateY)) scale3d(1, 1, 1);
+}
+
+.area:nth-child(8):hover
+  ~ .container-wrap
+  .card
+  .container-ai-chat
+  .chat
+  .options
+  button,
+.area:nth-child(8):hover
+  ~ .container-wrap
+  .card
+  .container-ai-chat
+  .chat
+  .chat-bot {
+  transform: perspective(var(--perspective)) rotateX(0deg) rotateY(0deg)
+    translateZ(var(--translateY)) scale3d(1, 1, 1);
+}
+
+.area:nth-child(7):hover
+  ~ .container-wrap
+  .card
+  .container-ai-chat
+  .chat
+  .options
+  button,
+.area:nth-child(7):hover
+  ~ .container-wrap
+  .card
+  .container-ai-chat
+  .chat
+  .chat-bot {
+  transform: perspective(var(--perspective)) rotateX(0deg) rotateY(-4deg)
+    translateZ(var(--translateY)) scale3d(1, 1, 1);
+}
+
+.area:nth-child(6):hover
+  ~ .container-wrap
+  .card
+  .container-ai-chat
+  .chat
+  .options
+  button,
+.area:nth-child(6):hover
+  ~ .container-wrap
+  .card
+  .container-ai-chat
+  .chat
+  .chat-bot {
+  transform: perspective(var(--perspective)) rotateX(0deg) rotateY(-8deg)
+    translateZ(var(--translateY)) scale3d(1, 1, 1);
+}
+
+.area:nth-child(5):hover
+  ~ .container-wrap
+  .card
+  .container-ai-chat
+  .chat
+  .options
+  button,
+.area:nth-child(5):hover
+  ~ .container-wrap
+  .card
+  .container-ai-chat
+  .chat
+  .chat-bot {
+  transform: perspective(var(--perspective)) rotateX(10deg) rotateY(8deg)
+    translateZ(var(--translateY)) scale3d(1, 1, 1);
+}
+
+.area:nth-child(4):hover
+  ~ .container-wrap
+  .card
+  .container-ai-chat
+  .chat
+  .options
+  button,
+.area:nth-child(4):hover
+  ~ .container-wrap
+  .card
+  .container-ai-chat
+  .chat
+  .chat-bot {
+  transform: perspective(var(--perspective)) rotateX(10deg) rotateY(4deg)
+    translateZ(var(--translateY)) scale3d(1, 1, 1);
+}
+
+.area:nth-child(3):hover
+  ~ .container-wrap
+  .card
+  .container-ai-chat
+  .chat
+  .options
+  button,
+.area:nth-child(3):hover
+  ~ .container-wrap
+  .card
+  .container-ai-chat
+  .chat
+  .chat-bot {
+  transform: perspective(var(--perspective)) rotateX(10deg) rotateY(0deg)
+    translateZ(var(--translateY)) scale3d(1, 1, 1);
+}
+
+.area:nth-child(2):hover
+  ~ .container-wrap
+  .card
+  .container-ai-chat
+  .chat
+  .options
+  button,
+.area:nth-child(2):hover
+  ~ .container-wrap
+  .card
+  .container-ai-chat
+  .chat
+  .chat-bot {
+  transform: perspective(var(--perspective)) rotateX(10deg) rotateY(-4deg)
+    translateZ(var(--translateY)) scale3d(1, 1, 1);
+}
+
+.area:nth-child(1):hover
+  ~ .container-wrap
+  .card
+  .container-ai-chat
+  .chat
+  .options
+  button,
+.area:nth-child(1):hover
+  ~ .container-wrap
+  .card
+  .container-ai-chat
+  .chat
+  .chat-bot {
+  transform: perspective(var(--perspective)) rotateX(10deg) rotateY(-8deg)
+    translateZ(var(--translateY)) scale3d(1, 1, 1);
+}
+
+@keyframes rotate-background-balls {
+  from {
+    transform: translateX(-50%) translateY(-50%) rotate(360deg);
+  }
+  to {
+    transform: translateX(-50%) translateY(-50%) rotate(0);
+  }
+}
+
+@keyframes animate-eyes {
+  46% {
+    height: 52px;
+  }
+  48% {
+    height: 20px;
+  }
+  50% {
+    height: 52px;
+  }
+  96% {
+    height: 52px;
+  }
+  98% {
+    height: 20px;
+  }
+  100% {
+    height: 52px;
+  }
+}
+
+.container2 {
+  position: relative;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 40px 40px;
+  background: linear-gradient(to right, #8D6BD1, #B558B5, #ee838e);
+  color: #f4f4f4;
+  border-radius: 20px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+  animation: fadeIn 2s ease-in-out;
+  z-index: 2;
+  margin-bottom: 400px;
+  justify-content: center;
+  align-items: center;
+}
+
+.container2 h2 {
+  font-size: 2.5em;
+  margin-bottom: 20px;
+  color: #0f1c2e;
+  font-weight: 600;
+  
+}
+
+.container2 .highlight {
+  color: #66dcde;
+  
+}
+
+.container2 p {
+  font-size: 1.2em;
+  line-height: 1.6;
+  color: #e0f7fa;
+  margin: 0;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+		</style>
+	</head>
+	<body class="is-preload">
+
+		<!-- Sidebar -->
+			<section id="sidebar">
+				<div class="inner">
+					<nav>
+						<ul>
+							<li><a href="#intro">Welcome</a></li>
+							<li><a href="#one">AI Model</a></li>
+							<li><a href="#two">What we do</a></li>
+							<!-- <li><a href="#three">Get in touch</a></li> -->
+						</ul>
+					</nav>
+				</div>
+			</section>
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Intro -->
+					<section id="intro" class="wrapper style1 fullscreen fade-up">
+						<div class="inner">
+							<h1>MULTIMODAL HEALTHCARE SYSTEM</h1>
+							<p>Please find the AI by clicking "CLICK HERE" Button<br>
+						    Our AI model recommend the most suitable Model for your needs.
+							</p>
+							
+							<ul class="actions">
+								<li><a href="#one" class="button scrolly">CLICK HERE</a></li>
+							</ul>
+						</div>
+					</section>
+
+				<!-- One -->
+					<section id="one" class="wrapper style1 fullscreen fade-up">
+                        <div class="container2">
+                            <h2>Meet <span class="highlight">Mandatory AI</span></h2>
+      <p>
+        Our AI-powered assistant that intelligently recommends the most suitable diagnostic model for your specific health condition.
+      </p>
+                        </div>
+                        <section>
+                            <!-- From Uiverse.io by Cobp --> 
+
+
+<div class="container-ai-input" onclick="window.location.href='/ai'" style="cursor: pointer;">
+  <div class="area"></div>
+  <div class="area"></div>
+  <div class="area"></div>
+  <div class="area"></div>
+  <div class="area"></div>
+  <div class="area"></div>
+  <div class="area"></div>
+  <div class="area"></div>
+  <div class="area"></div>
+  <div class="area"></div>
+  <div class="area"></div>
+  <div class="area"></div>
+  <div class="area"></div>
+  <div class="area"></div>
+  <div class="area"></div>
+  <label class="container-wrap">
+    <input type="checkbox" />
+    <div class="card">
+      <div class="background-blur-balls">
+        <div class="balls">
+          <span class="ball rosa"></span>
+          <span class="ball violet"></span>
+          <span class="ball green"></span>
+          <span class="ball cyan"></span>
+        </div>
+      </div>
+      <div class="content-card">
+        <div class="background-blur-card">
+          <div class="eyes">
+            <span class="eye"></span>
+            <span class="eye"></span>
+          </div>
+          <div class="eyes happy">
+            <svg fill="none" viewBox="0 0 24 24">
+              <path
+                fill="currentColor"
+                d="M8.28386 16.2843C8.9917 15.7665 9.8765 14.731 12 14.731C14.1235 14.731 15.0083 15.7665 15.7161 16.2843C17.8397 17.8376 18.7542 16.4845 18.9014 15.7665C19.4323 13.1777 17.6627 11.1066 17.3088 10.5888C16.3844 9.23666 14.1235 8 12 8C9.87648 8 7.61556 9.23666 6.69122 10.5888C6.33728 11.1066 4.56771 13.1777 5.09858 15.7665C5.24582 16.4845 6.16034 17.8376 8.28386 16.2843Z"
+              ></path>
+            </svg>
+            <svg fill="none" viewBox="0 0 24 24">
+              <path
+                fill="currentColor"
+                d="M8.28386 16.2843C8.9917 15.7665 9.8765 14.731 12 14.731C14.1235 14.731 15.0083 15.7665 15.7161 16.2843C17.8397 17.8376 18.7542 16.4845 18.9014 15.7665C19.4323 13.1777 17.6627 11.1066 17.3088 10.5888C16.3844 9.23666 14.1235 8 12 8C9.87648 8 7.61556 9.23666 6.69122 10.5888C6.33728 11.1066 4.56771 13.1777 5.09858 15.7665C5.24582 16.4845 6.16034 17.8376 8.28386 16.2843Z"
+              ></path>
+            </svg>
+          </div>
+        </div>
+      </div>
+          </div>
+          </label>
+        </div>
+  
+
+
+</section>
+</section>
+				<section id="two" class="wrapper style3 fade-up">
+						<div class="inner">
+							<h2>What we do</h2>
+							<p>Phasellus convallis elit id ullamcorper pulvinar. Duis aliquam turpis mauris, eu ultricies erat malesuada quis. Aliquam dapibus, lacus eget hendrerit bibendum, urna est aliquam sem, sit amet imperdiet est velit quis lorem.</p>
+							<div class="features">
+								<section>
+									<span class="icon solid major fa-code"></span>
+									<h3>Lorem ipsum amet</h3>
+									<p>Phasellus convallis elit id ullam corper amet et pulvinar. Duis aliquam turpis mauris, sed ultricies erat dapibus.</p>
+								</section>
+								<section>
+									<span class="icon solid major fa-lock"></span>
+									<h3>Aliquam sed nullam</h3>
+									<p>Phasellus convallis elit id ullam corper amet et pulvinar. Duis aliquam turpis mauris, sed ultricies erat dapibus.</p>
+								</section>
+								<section>
+									<span class="icon solid major fa-cog"></span>
+									<h3>Sed erat ullam corper</h3>
+									<p>Phasellus convallis elit id ullam corper amet et pulvinar. Duis aliquam turpis mauris, sed ultricies erat dapibus.</p>
+								</section>
+								<section>
+									<span class="icon solid major fa-desktop"></span>
+									<h3>Veroeros quis lorem</h3>
+									<p>Phasellus convallis elit id ullam corper amet et pulvinar. Duis aliquam turpis mauris, sed ultricies erat dapibus.</p>
+								</section>
+								<section>
+									<span class="icon solid major fa-link"></span>
+									<h3>Urna quis bibendum</h3>
+									<p>Phasellus convallis elit id ullam corper amet et pulvinar. Duis aliquam turpis mauris, sed ultricies erat dapibus.</p>
+								</section>
+								<section>
+									<span class="icon major fa-gem"></span>
+									<h3>Aliquam urna dapibus</h3>
+									<p>Phasellus convallis elit id ullam corper amet et pulvinar. Duis aliquam turpis mauris, sed ultricies erat dapibus.</p>
+								</section>
+							</div>
+							<ul class="actions">
+								<li><a href="#one" class="button scrolly">CLICK HERE</a></li>
+							</ul>
+						</div>
+					</section>
+
+				<!-- Three -->
+					<!-- <section id="three" class="wrapper style1 fade-up">
+						<div class="inner">
+							<h2>Get in touch</h2>
+							<p>Phasellus convallis elit id ullamcorper pulvinar. Duis aliquam turpis mauris, eu ultricies erat malesuada quis. Aliquam dapibus, lacus eget hendrerit bibendum, urna est aliquam sem, sit amet imperdiet est velit quis lorem.</p>
+							<div class="split style1">
+								<section>
+									<form method="post" action="#">
+										<div class="fields">
+											<div class="field half">
+												<label for="name">Name</label>
+												<input type="text" name="name" id="name" />
+											</div>
+											<div class="field half">
+												<label for="email">Email</label>
+												<input type="text" name="email" id="email" />
+											</div>
+											<div class="field">
+												<label for="message">Message</label>
+												<textarea name="message" id="message" rows="5"></textarea>
+											</div>
+										</div>
+										<ul class="actions">
+											<li><a href="" class="button submit">Send Message</a></li>
+										</ul>
+									</form>
+								</section>
+								<section>
+									<ul class="contact">
+										<li>
+											<h3>Address</h3>
+											<span>12345 Somewhere Road #654<br />
+											Nashville, TN 00000-0000<br />
+											USA</span>
+										</li>
+										<li>
+											<h3>Email</h3>
+											<a href="#">user@untitled.tld</a>
+										</li>
+										<li>
+											<h3>Phone</h3>
+											<span>(000) 000-0000</span>
+										</li>
+										<li>
+											<h3>Social</h3>
+											<ul class="icons">
+												<li><a href="#" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+												<li><a href="#" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+												<li><a href="#" class="icon brands fa-github"><span class="label">GitHub</span></a></li>
+												<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+												<li><a href="#" class="icon brands fa-linkedin-in"><span class="label">LinkedIn</span></a></li>
+											</ul>
+										</li>
+									</ul>
+								</section>
+							</div>
+						</div>
+					</section> -->
+
+			</div>
+
+		<!-- Footer
+			<footer id="footer" class="wrapper style1-alt">
+				<div class="inner">
+					<ul class="menu">
+						<li>&copy; Untitled. All rights reserved.</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+					</ul>
+				</div>
+			</footer> -->
+
+		<!-- Scripts -->
+		<script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+		<script src="{{ url_for('static', filename='js/jquery.scrollex.min.js') }}"></script>
+		<script src="{{ url_for('static', filename='js/jquery.scrolly.min.js') }}"></script>
+		<script src="{{ url_for('static', filename='js/browser.min.js') }}"></script>
+		<script src="{{ url_for('static', filename='js/breakpoints.min.js') }}"></script>
+		<script src="{{ url_for('static', filename='js/util.js') }}"></script>
+		<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+			{% if toast_message %}
+			<div class="toast">{{ toast_message }}</div>
+		  {% endif %}
+
+		<script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const userInput = document.getElementById('user-input');
+            const sendButton = document.getElementById('send-button');
+            const chatMessages = document.getElementById('chat-messages');
+            const micBtn = document.getElementById('mic-btn');
+            const restartBtn = document.getElementById('restart-btn');
+            const darkModeBtn = document.getElementById('dark-mode-btn');
+            const helpBtn = document.getElementById('help-btn');
+
+            // VoiceFlow API configuration
+            const VOICEFLOW_API_KEY = 'VF.DM.66ae2c329e5a74131531ba52.hKwqSm2c9Tu2esp7'; // Replace with your API key
+            const VOICEFLOW_VERSION_ID = '66adfc79e90cb2e525012156'; // Or your specific version ID
+            let userID = generateUserId();
+            let isListening = false;
+            let recognition;
+            let conversationActive = true;
+
+            // Initialize the conversation with VoiceFlow
+            initConversation();
+
+            // Auto-resize textarea
+            userInput.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = (this.scrollHeight) + 'px';
+            });
+
+            // Generate a unique user ID
+            function generateUserId() {
+                return 'user_' + Math.random().toString(36).substr(2, 9);
+            }
+
+            // Initialize VoiceFlow conversation
+            function initConversation() {
+                showTypingIndicator();
+                
+                fetch(`https://general-runtime.voiceflow.com/state/${VOICEFLOW_VERSION_ID}/user/${userID}/interact`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': VOICEFLOW_API_KEY
+                    },
+                    body: JSON.stringify({
+                        action: { type: 'launch' }
+                    })
+                })
+                .then(response => response.json())
+                .then(handleVoiceFlowResponse)
+                .catch(error => {
+                    console.error('Error initializing conversation:', error);
+                    addMessage("Sorry, I'm having trouble connecting to the VoiceFlow service. Please try again later.", 'ai');
+                    removeTypingIndicator();
+                });
+            }
+
+            // Send user response to VoiceFlow
+            function sendToVoiceFlow(userResponse) {
+                if (!conversationActive) return;
+                
+                showTypingIndicator();
+                
+                fetch(`https://general-runtime.voiceflow.com/state/${VOICEFLOW_VERSION_ID}/user/${userID}/interact`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': VOICEFLOW_API_KEY
+                    },
+                    body: JSON.stringify({
+                        action: {
+                            type: 'text',
+                            payload: userResponse
+                        }
+                    })
+                })
+                .then(response => response.json())
+                .then(handleVoiceFlowResponse)
+                .catch(error => {
+                    console.error('Error sending message to VoiceFlow:', error);
+                    addMessage("Sorry, I'm having trouble processing your request. Please try again.", 'ai');
+                    removeTypingIndicator();
+                });
+            }
+            let lastAIQuestion = "";
+            // Handle VoiceFlow API response
+            function handleVoiceFlowResponse(response) {
+                removeTypingIndicator();
+                
+                if (!response || !response.length) {
+                    conversationActive = false;
+                    addMessage("Our conversation has ended. You can restart it if you'd like to chat more.", 'ai');
+                    return;
+                }
+                
+                // Process each trace in the response
+                response.forEach(trace => {
+                    switch (trace.type) {
+                        case 'text':
+                            lastAIQuestion = trace.payload.message;
+                            addMessage(trace.payload.message, 'ai');
+                            break;
+                        case 'no match re-prompt':  // If user input doesn't match expected pattern
+                            addMessage("I'm sorry, I didn't catch that. Could you please try again?", 'ai');
+                            userInput.disabled = false;
+                            userInput.focus();
+                            break;
+                        case 'end':
+                            conversationActive = false;
+                            // addMessage("Thank you for chatting with me! If you have more questions, feel free to restart our conversation.", 'ai');
+                            setTimeout(() => {
+                // addMessage("Just to continue where we left off:", 'ai');
+                addMessage(lastAIQuestion, 'ai');
+                userInput.disabled = false;
+                userInput.focus();
+            }, 2000);
+                            break;
+                        // Add more trace types as needed
+                    }
+                });
+            }
+
+            // Send message function
+            function sendMessage() {
+                const message = userInput.value.trim();
+                if (message === '') return;
+
+                // Add user message to chat
+                addMessage(message, 'user');
+                userInput.value = '';
+                userInput.style.height = '44px';
+
+                // Send to VoiceFlow
+                sendToVoiceFlow(message);
+            }
+
+            // Add message to chat
+            function addMessage(content, sender) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'message-enter flex space-x-3 ' + (sender === 'user' ? 'justify-end' : '');
+
+                const avatarDiv = document.createElement('div');
+                avatarDiv.className = 'flex-shrink-0';
+                
+                const avatarInner = document.createElement('div');
+                avatarInner.className = 'w-8 h-8 rounded-full flex items-center justify-center ' + 
+                    (sender === 'user' ? 'bg-blue-100' : 'bg-purple-100');
+                
+                const avatarIcon = document.createElement('i');
+                avatarIcon.className = sender === 'user' ? 'fas fa-user text-blue-600' : 'fas fa-robot text-purple-600';
+                
+                avatarInner.appendChild(avatarIcon);
+                avatarDiv.appendChild(avatarInner);
+
+                const contentDiv = document.createElement('div');
+                contentDiv.className = (sender === 'user' ? 'bg-blue-50' : 'bg-purple-50') + 
+                    ' rounded-lg p-3 max-w-[80%]';
+                
+                const messageContent = document.createElement('p');
+                messageContent.className = 'text-gray-800';
+                messageContent.textContent = content;
+                
+                const timeStamp = document.createElement('p');
+                timeStamp.className = 'text-xs text-gray-500 mt-1 ' + 
+                    (sender === 'user' ? 'text-right' : '');
+                
+                // Format timestamp
+                const now = new Date();
+                timeStamp.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                
+                contentDiv.appendChild(messageContent);
+                contentDiv.appendChild(timeStamp);
+
+                if (sender === 'user') {
+                    messageDiv.appendChild(contentDiv);
+                    messageDiv.appendChild(avatarDiv);
+                } else {
+                    messageDiv.appendChild(avatarDiv);
+                    messageDiv.appendChild(contentDiv);
+                }
+
+                chatMessages.appendChild(messageDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+
+            // Show typing indicator
+            function showTypingIndicator() {
+                // Remove existing typing indicator if any
+                removeTypingIndicator();
+                
+                const typingDiv = document.createElement('div');
+                typingDiv.className = 'flex space-x-3';
+                typingDiv.id = 'typing-indicator';
+
+                const avatarDiv = document.createElement('div');
+                avatarDiv.className = 'flex-shrink-0';
+                
+                const avatarInner = document.createElement('div');
+                avatarInner.className = 'w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center';
+                
+                const avatarIcon = document.createElement('i');
+                avatarIcon.className = 'fas fa-robot text-purple-600';
+                
+                avatarInner.appendChild(avatarIcon);
+                avatarDiv.appendChild(avatarInner);
+
+                const contentDiv = document.createElement('div');
+                contentDiv.className = 'bg-purple-50 rounded-lg p-3 max-w-[80%] flex space-x-1 items-center';
+                
+                const typingContent = document.createElement('div');
+                typingContent.className = 'typing-indicator';
+                
+                for (let i = 0; i < 3; i++) {
+                    const dot = document.createElement('span');
+                    dot.className = 'inline-block w-2 h-2 rounded-full bg-purple-400';
+                    typingContent.appendChild(dot);
+                }
+                
+                contentDiv.appendChild(typingContent);
+
+                typingDiv.appendChild(avatarDiv);
+                typingDiv.appendChild(contentDiv);
+
+                chatMessages.appendChild(typingDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+
+            // Remove typing indicator
+            function removeTypingIndicator() {
+                const typingIndicator = document.getElementById('typing-indicator');
+                if (typingIndicator) {
+                    typingIndicator.remove();
+                }
+            }
+
+            // Initialize speech recognition
+            function initSpeechRecognition() {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                
+                if (!SpeechRecognition) {
+                    addMessage("Your browser doesn't support speech recognition. Try Chrome or Edge.", 'ai');
+                    return false;
+                }
+                
+                recognition = new SpeechRecognition();
+                recognition.continuous = false;
+                recognition.interimResults = false;
+                
+                recognition.onstart = function() {
+                    isListening = true;
+                    micBtn.classList.add('mic-active');
+                    userInput.placeholder = "Listening...";
+                };
+                
+                recognition.onresult = function(event) {
+                    const transcript = event.results[0][0].transcript;
+                    userInput.value = transcript;
+                    micBtn.classList.remove('mic-active');
+    
+                    userInput.placeholder = "Type your answer...";
+                    sendMessage();
+                };
+                
+                recognition.onerror = function(event) {
+                    console.error('Speech recognition error', event.error);
+                    micBtn.classList.remove('mic-active');
+        
+                    userInput.placeholder = "Type your answer...";
+                    
+                };
+                
+                recognition.onend = function() {
+                    if (isListening) {
+                        recognition.start(); // Restart if still listening
+                    } else {
+                        micBtn.classList.remove('mic-active');
+                        userInput.placeholder = "Type your answer...";
+                    }
+                };
+                
+                return true;
+            }
+
+            // Toggle speech recognition
+            function toggleSpeechRecognition() {
+                if (!recognition) {
+                    if (!initSpeechRecognition()) return;
+                }
+                
+                if (isListening) {
+                    recognition.stop();
+                    isListening = false;
+                } else {
+                    try {
+                        recognition.start();
+                    } catch (e) {
+                        console.error('Speech recognition error:', e);
+                        addMessage("Couldn't access your microphone. Please check permissions.", 'ai');
+                    }
+                }
+            }
+
+            // Restart conversation
+            // function restartConversation() {
+            //     // Clear chat messages
+            //     chatMessages.innerHTML = '';
+                
+            //     // Generate new user ID
+            //     userID = generateUserId();
+            //     conversationActive = true;
+                
+            //     // Add welcome message
+            //     addMessage("Hello! I'm your Mandatory AI assistant. Let's start fresh.", 'ai');
+                
+            //     // Initialize new conversation
+            //     initConversation();
+            // }
+
+            // Toggle dark mode
+            function toggleDarkMode() {
+                document.documentElement.classList.toggle('dark');
+                const icon = darkModeBtn.querySelector('i');
+                
+                if (document.documentElement.classList.contains('dark')) {
+                    icon.classList.remove('fa-moon');
+                    icon.classList.add('fa-sun');
+                } else {
+                    icon.classList.remove('fa-sun');
+                    icon.classList.add('fa-moon');
+                }
+            }
+
+            // Show help message
+            function showHelp() {
+                addMessage("Here's how to use me:\n\n" +
+                          "1. Speak or type your answers\n" +
+                          "2. Click the microphone button for voice input\n" +
+                          "3. Use the restart button to begin a new conversation\n" +
+                          "4. I'll guide you through questions from the VoiceFlow system", 'ai');
+            }
+
+            // Event listeners
+            sendButton.addEventListener('click', sendMessage);
+            
+            userInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+            
+            micBtn.addEventListener('click', toggleSpeechRecognition);
+            restartBtn.addEventListener('click', restartConversation);
+            darkModeBtn.addEventListener('click', toggleDarkMode);
+            helpBtn.addEventListener('click', showHelp);
+        });
+    </script>
+	</body>
+</html>

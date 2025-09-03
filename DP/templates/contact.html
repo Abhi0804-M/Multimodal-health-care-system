@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="https://fonts.googleapis.com/css2?family=Overpass+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./static/css/base.css">
+    <link rel="stylesheet" href="./static/css/navbar.css">
+    <link rel="stylesheet" href="./static/css/main.css">
+    <link rel="stylesheet" href="./static/css/footer.css">
+    
+    
+    <script defer src="./static/js/account_dropdown.js"></script>
+    <script defer src="./static/js/burger_menu_dropdown.js"></script>
+    <script defer src="./static/js/script.js"></script>
+
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js" > </script>
+    <script type="text/javascript">
+   document.addEventListener('DOMContentLoaded', function () {
+    emailjs.init("5xBuNMIj0M0hZXnWa"); // Ensure you replace 'YOUR_USER_ID' with your actual EmailJS user ID.
+        });
+        </script>
+
+    <title>Contact Form</title>
+</head>
+<header><a href='/'><video class="logo" size="1250" width="100" height="76"autoplay loop muted src="/static/img/file (1).mp4">
+</video> </a>
+</header>
+
+<body>
+   
+    <main>
+        
+        <div class="title">Contact us</div>
+        <div class="title-info">We'll get back to you soon!</div>
+       
+        <form onsubmit="sendemail(); return false;" method="POST" enctype="multipart/form-data" class="form">
+            <div class="input-group">
+                <input type="text" name="first_name" id="first-name" placeholder="First name" required>
+                <label for="first-name">First name</label>
+            </div>
+            
+            <div class="input-group">
+                <input type="text" name="last_name" id="last-name" placeholder="Last Name" required>
+                <label for="last-name">Last name</label>
+            </div>
+
+            <div class="input-group">
+                <input type="email" name="e-mail" id="email" placeholder="e-mail" required>
+                <label for="email">e-mail</label>
+            </div>
+
+            <div class="textarea-group">
+                <textarea name="message" id="message" rows="5" placeholder="Message" required></textarea>
+                <label for="message">Message</label>
+            </div>
+
+            <div class="button-div">
+                <button type="submit">Send</button>
+            </div>
+        </form>
+    </main>
+
+    <footer>
+        <a href="#" target="_blank"><img class="social-media-img" src="./static/img/social_media/facebook.svg" alt="Facebook"></a>
+        <a href="#" target="_blank"><img class="social-media-img" src="./static/img/social_media/github.svg" alt="GitHub"></a>
+        <a href="#" target="_blank"><img class="social-media-img" src="./static/img/social_media/instagram.svg" alt="Instagram"></a>
+        <a href="#" target="_blank"><img class="social-media-img" src="./static/img/social_media/linkedin.svg" alt="LinkedIn"></a>
+        <a href="#" target="_blank"><img class="social-media-img" src="./static/img/social_media/twitter.svg" alt="Twitter"></a>
+    </footer>
+
+    <script src="https://smtpjs.com/v3/smtp.js"></script>
+    <script>
+        function sendemail(){
+
+            var email=document.getElementById("email").value;
+            var name=document.getElementById("first-name").value;
+            var message=document.getElementById("message").value;
+
+            var templateParams = {
+                email: email,
+                to_name: name,
+                message: message
+            };
+
+            emailjs.send('service_k90sb6k', 'template_mqi0szq', templateParams)
+            .then(function(response) {
+            console.log('SUCCESS!', response.status, response.text);
+            window.alert("Sent successfully!");
+            
+            },function(error) {
+                console.log('FAILED...', error);
+                window.alert("Failed to send email: " + error.text);
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anemia Detection Project</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .container {
+            width: 100%;
+            min-height: 100vh;
+            background: #000000;
+            --gap: 5em;
+            --line: 1px;
+            --color: rgba(255, 255, 255, 0.2);
+            background-image: linear-gradient(
+                -90deg,
+                transparent calc(var(--gap) - var(--line)),
+                var(--color) calc(var(--gap) - var(--line) + 1px),
+                var(--color) var(--gap)
+                ),
+                linear-gradient(
+                0deg,
+                transparent calc(var(--gap) - var(--line)),
+                var(--color) calc(var(--gap) - var(--line) + 1px),
+                var(--color) var(--gap)
+            );
+            background-size: var(--gap) var(--gap);
+            color: #e0e0e0;
+            padding: 20px;
+            max-width: 100%;
+        }
+
+        h1 {
+            background-image: linear-gradient(to right, #a855f7, #ef4444);
+            -webkit-background-clip: text;
+            color: transparent;
+            font-size: 2.2em;
+            text-align: center;
+            margin: 40px 0;
+        }
+
+        h2 {
+            color: #a855f7;
+            font-size: 2em;
+            margin-top: 40px;
+        }
+
+        p {
+            font-size: 1.2em;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+
+        ul {
+            font-size: 1.2em;
+            line-height: 1.8;
+            margin-bottom: 20px;
+            list-style-type: disc;
+            padding-left: 20px;
+        }
+
+        .highlight {
+            text-decoration: underline;
+        }
+
+        .section {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-start;
+            margin-bottom: 40px;
+        }
+
+        .section > div {
+            flex: 1;
+            min-width: 300px;
+            margin: 10px;
+            padding: 20px;
+            background-color: #292929;
+            border-radius: 10px;
+            transition: transform 0.3s;
+        }
+
+        .section > div:hover {
+            transform: translateY(-10px);
+        }
+
+        .icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Anemia Detection Using Palm, Eyelids, and Nails</h1>
+        
+        <div class="section">
+            <div>
+                <h2>Convolutional Neural Networks (CNNs)</h2>
+                <p>
+                    Our project leverages <span class="highlight">Convolutional Neural Networks (CNNs)</span> for training models that can analyze the intricate features in images of palms, eyelids, and nails. The CNN models are trained on extensive datasets to recognize patterns and indicators of anemia, ensuring high accuracy and reliability.
+                </p>
+                <ul>
+                    <li><span class="highlight">Convolutional Neural Networks (CNNs)</span> are used to train models that analyze intricate features in images.</li>
+                    <li>Extensive datasets are used to train CNN models to recognize patterns and indicators of anemia, ensuring high accuracy and reliability.</li>
+                </ul>
+            </div>
+            <div>
+                <h2>Roboflow</h2>
+                <p>
+                    For <span class="highlight">eyelids</span> and <span class="highlight">nails</span>, we utilize datasets from <span class="highlight">Roboflow</span>, which include predefined segmentation models. These models help in accurately segmenting and analyzing the regions of interest in the images. Roboflow's robust tools streamline the preprocessing and segmentation tasks, making the model training process more efficient.
+                </p>
+                <ul>
+                    <li>Roboflow provides predefined segmentation models for eyelids and nails.</li>
+                    <li>These models help in accurate segmentation and analysis of the regions of interest.</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div>
+                <h2>Mediapipe</h2>
+                <p>
+                    In the case of <span class="highlight">palm</span> images, we employ <span class="highlight">Mediapipe</span>, a framework developed by Google, to capture palm images from real-time video feeds. Mediapipe provides reliable and precise palm detection using landmark points. The detected palm images are then segmented using these landmarks, allowing for focused analysis on the relevant areas.
+                </p>
+                <ul>
+                    <li>Mediapipe is used for capturing palm images from real-time video feeds.</li>
+                    <li>Reliable and precise palm detection using landmark points.</li>
+                </ul>
+            </div>
+            <div>
+                <h2>Flask</h2>
+                <p>
+                    All these components are integrated into a cohesive system using a Python-based <span class="highlight">Flask</span> application. Flask serves as the backend framework, managing the interaction between the frontend user interface and the backend models. This setup ensures a seamless and user-friendly experience, allowing users to upload images, run predictions, and receive results efficiently.
+                </p>
+                <ul>
+                    <li>Flask is used as the backend framework to integrate all components.</li>
+                    <li>Seamless and user-friendly experience for uploading images, running predictions, and receiving results.</li>
+                </ul>
+            </div>
+        </div>
+        
+        <p>
+            The ultimate goal of this project is to develop a practical tool that can be used in various settings, particularly in resource-limited areas, to screen for anemia. By providing a non-invasive and easily accessible method for early detection, we aim to empower healthcare providers and individuals in their efforts to combat this prevalent health issue.
+        </p>
+        
+        <div class="footer">
+            &copy; 2025 Anemia Detection Project. All rights reserved.
+        </div>
+    </div>
+</body>
+</html>

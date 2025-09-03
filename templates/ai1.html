@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VoiceFlow AI Assistant</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .typing-indicator span {
+            animation: pulse 1.5s infinite ease-in-out;
+        }
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        .message-enter {
+            animation: messageEnter 0.3s ease-out;
+        }
+        @keyframes messageEnter {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #6e8efb 0%, #a777e3 100%);
+        }
+        .chat-container {
+            height: calc(100vh - 160px);
+        }
+        @media (max-width: 640px) {
+            .chat-container {
+                height: calc(100vh - 140px);
+            }
+        }
+        .mic-active {
+            animation: pulse 1.5s infinite;
+            color: #ef4444;
+        }
+    </style>
+</head>
+<body> 
+    <div class="bg-gray-100 font-sans">
+    <div class="min-h-screen flex flex-col">
+        <!-- Header -->
+        <header class="gradient-bg text-white p-4 shadow-lg">
+            <div class="container mx-auto flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center">
+                        <i class="fas fa-robot text-purple-600 text-xl"></i>
+                    </div>
+                    <h1 class="text-xl font-bold">Mandatory AI</h1>
+                </div>
+                <div class="flex space-x-4">
+                    <!-- <button id="restart-btn" class="p-2 rounded-full hover:bg-white/10 transition" title="Restart Conversation">
+                        <i class="fas fa-sync-alt"></i>
+                    </button> -->
+                    <!-- <button id="dark-mode-btn" class="p-2 rounded-full hover:bg-white/10 transition">
+                        <i class="fas fa-moon"></i>
+                    </button> -->
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Chat Area -->
+        <main class="flex-1 container mx-auto p-4 max-w-4xl">
+            <div class="bg-purple-100 rounded-xl shadow-lg overflow-hidden flex flex-col h-full">
+                <!-- Chat Messages -->
+                <div class="chat-container overflow-y-auto p-4 space-y-4" id="chat-messages">
+                    <!-- AI Welcome Message -->
+                    <!-- <div class="message-enter flex space-x-3">
+                        <div class="flex-shrink-0">
+                            <div class="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center">
+                                <i class="fas fa-robot text-purple-600"></i>
+                            </div>
+                        </div>
+                        <div class="bg-purple-50 rounded-lg p-3 max-w-[80%]">
+                            <p class="text-gray-800">Hello! I'm your Mandatory AI assistant. Let's get started with some questions.</p>
+                            <p class="text-xs text-gray-500 mt-1">Just now</p>
+                        </div> -->
+                    </div>
+                </div>
+
+                <!-- Input Area -->
+                <div class="border-t border-gray-200 p-4 bg-gray-50">
+                    <div class="flex items-center space-x-2">
+                        <button id="mic-btn" class="p-3 rounded-full text-gray-500 hover:bg-gray-200 transition" title="Voice Input">
+                            <i class="fas fa-microphone"></i>
+                        </button>
+                        <div class="flex-1 relative">
+                            <textarea 
+                                id="user-input" 
+                                rows="1" 
+                                placeholder="Type your answer..." 
+                                class="w-full p-3 pr-10 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
+                                style="min-height: 44px; max-height: 120px;"
+                            ></textarea>
+                        </div>
+                        <button id="send-button" class="p-3 rounded-full gradient-bg text-white hover:opacity-90 transition">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                    <div class="flex items-center justify-between mt-2 px-2">
+                        <!-- <p class="text-xs text-gray-500">Powered by Mandatory API</p> -->
+                        <div class="flex space-x-1">
+                            <button class="text-xs p-1 px-2 rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300 transition" id="help-btn">Help</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="bg-blue-100 border-t border-gray-200 py-3 px-4 text-center text-sm text-gray-500">
+            <p>© 2025 Mandatory AI. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const userInput = document.getElementById('user-input');
+            const sendButton = document.getElementById('send-button');
+            const chatMessages = document.getElementById('chat-messages');
+            const micBtn = document.getElementById('mic-btn');
+            const restartBtn = document.getElementById('restart-btn');
+            const darkModeBtn = document.getElementById('dark-mode-btn');
+            const helpBtn = document.getElementById('help-btn');
+
+            // VoiceFlow API configuration
+            const VOICEFLOW_API_KEY = 'VF.DM.66ae2c329e5a74131531ba52.hKwqSm2c9Tu2esp7'; // Replace with your API key
+            const VOICEFLOW_VERSION_ID = '66adfc79e90cb2e525012156'; // Or your specific version ID
+            let userID = generateUserId();
+            let isListening = false;
+            let recognition;
+            let conversationActive = true;
+
+            // Initialize the conversation with VoiceFlow
+            initConversation();
+
+            // Auto-resize textarea
+            userInput.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = (this.scrollHeight) + 'px';
+            });
+
+            // Generate a unique user ID
+            function generateUserId() {
+                return 'user_' + Math.random().toString(36).substr(2, 9);
+            }
+
+            // Initialize VoiceFlow conversation
+            function initConversation() {
+                showTypingIndicator();
+                
+                fetch(`https://general-runtime.voiceflow.com/state/${VOICEFLOW_VERSION_ID}/user/${userID}/interact`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': VOICEFLOW_API_KEY
+                    },
+                    body: JSON.stringify({
+                        action: { type: 'launch' }
+                    })
+                })
+                .then(response => response.json())
+                .then(handleVoiceFlowResponse)
+                .catch(error => {
+                    console.error('Error initializing conversation:', error);
+                    addMessage("Sorry, I'm having trouble connecting to the VoiceFlow service. Please try again later.", 'ai');
+                    removeTypingIndicator();
+                });
+            }
+
+            // Send user response to VoiceFlow
+            function sendToVoiceFlow(userResponse) {
+                if (!conversationActive) return;
+                
+                showTypingIndicator();
+                
+                fetch(`https://general-runtime.voiceflow.com/state/${VOICEFLOW_VERSION_ID}/user/${userID}/interact`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': VOICEFLOW_API_KEY
+                    },
+                    body: JSON.stringify({
+                        action: {
+                            type: 'text',
+                            payload: userResponse
+                        }
+                    })
+                })
+                .then(response => response.json())
+                .then(handleVoiceFlowResponse)
+                .catch(error => {
+                    console.error('Error sending message to VoiceFlow:', error);
+                    addMessage("Sorry, I'm having trouble processing your request. Please try again.", 'ai');
+                    removeTypingIndicator();
+                });
+            }
+            let lastAIQuestion = "";
+            // Handle VoiceFlow API response
+            function handleVoiceFlowResponse(response) {
+                removeTypingIndicator();
+                
+                if (!response || !response.length) {
+                    conversationActive = false;
+                    addMessage("Our conversation has ended. You can restart it if you'd like to chat more.", 'ai');
+                    return;
+                }
+                
+                // Process each trace in the response
+                response.forEach(trace => {
+                    switch (trace.type) {
+                        case 'text':
+                            lastAIQuestion = trace.payload.message;
+                            addMessage(trace.payload.message, 'ai');
+                            break;
+                        case 'no match re-prompt':  // If user input doesn't match expected pattern
+                            addMessage("I'm sorry, I didn't catch that. Could you please try again?", 'ai');
+                            userInput.disabled = false;
+                            userInput.focus();
+                            break;
+                        case 'end':
+                            conversationActive = false;
+                            // addMessage("Thank you for chatting with me! If you have more questions, feel free to restart our conversation.", 'ai');
+                            setTimeout(() => {
+                // addMessage("Just to continue where we left off:", 'ai');
+                addMessage(lastAIQuestion, 'ai');
+                userInput.disabled = false;
+                userInput.focus();
+            }, 2000);
+                            break;
+                        // Add more trace types as needed
+                    }
+                });
+            }
+
+            // Send message function
+            function sendMessage() {
+                const message = userInput.value.trim();
+                if (message === '') return;
+
+                // Add user message to chat
+                addMessage(message, 'user');
+                userInput.value = '';
+                userInput.style.height = '44px';
+
+                // Send to VoiceFlow
+                sendToVoiceFlow(message);
+            }
+
+            // Add message to chat
+            function addMessage(content, sender) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'message-enter flex space-x-3 ' + (sender === 'user' ? 'justify-end' : '');
+
+                const avatarDiv = document.createElement('div');
+                avatarDiv.className = 'flex-shrink-0';
+                
+                const avatarInner = document.createElement('div');
+                avatarInner.className = 'w-8 h-8 rounded-full flex items-center justify-center ' + 
+                    (sender === 'user' ? 'bg-blue-100' : 'bg-purple-100');
+                
+                const avatarIcon = document.createElement('i');
+                avatarIcon.className = sender === 'user' ? 'fas fa-user text-blue-600' : 'fas fa-robot text-purple-600';
+                
+                avatarInner.appendChild(avatarIcon);
+                avatarDiv.appendChild(avatarInner);
+
+                const contentDiv = document.createElement('div');
+                contentDiv.className = (sender === 'user' ? 'bg-blue-50' : 'bg-purple-50') + 
+                    ' rounded-lg p-3 max-w-[80%]';
+                
+                const messageContent = document.createElement('p');
+                messageContent.className = 'text-gray-800';
+                messageContent.textContent = content;
+                
+                const timeStamp = document.createElement('p');
+                timeStamp.className = 'text-xs text-gray-500 mt-1 ' + 
+                    (sender === 'user' ? 'text-right' : '');
+                
+                // Format timestamp
+                const now = new Date();
+                timeStamp.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                
+                contentDiv.appendChild(messageContent);
+                contentDiv.appendChild(timeStamp);
+
+                if (sender === 'user') {
+                    messageDiv.appendChild(contentDiv);
+                    messageDiv.appendChild(avatarDiv);
+                } else {
+                    messageDiv.appendChild(avatarDiv);
+                    messageDiv.appendChild(contentDiv);
+                }
+
+                chatMessages.appendChild(messageDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+
+            // Show typing indicator
+            function showTypingIndicator() {
+                // Remove existing typing indicator if any
+                removeTypingIndicator();
+                
+                const typingDiv = document.createElement('div');
+                typingDiv.className = 'flex space-x-3';
+                typingDiv.id = 'typing-indicator';
+
+                const avatarDiv = document.createElement('div');
+                avatarDiv.className = 'flex-shrink-0';
+                
+                const avatarInner = document.createElement('div');
+                avatarInner.className = 'w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center';
+                
+                const avatarIcon = document.createElement('i');
+                avatarIcon.className = 'fas fa-robot text-purple-600';
+                
+                avatarInner.appendChild(avatarIcon);
+                avatarDiv.appendChild(avatarInner);
+
+                const contentDiv = document.createElement('div');
+                contentDiv.className = 'bg-purple-50 rounded-lg p-3 max-w-[80%] flex space-x-1 items-center';
+                
+                const typingContent = document.createElement('div');
+                typingContent.className = 'typing-indicator';
+                
+                for (let i = 0; i < 3; i++) {
+                    const dot = document.createElement('span');
+                    dot.className = 'inline-block w-2 h-2 rounded-full bg-purple-400';
+                    typingContent.appendChild(dot);
+                }
+                
+                contentDiv.appendChild(typingContent);
+
+                typingDiv.appendChild(avatarDiv);
+                typingDiv.appendChild(contentDiv);
+
+                chatMessages.appendChild(typingDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+
+            // Remove typing indicator
+            function removeTypingIndicator() {
+                const typingIndicator = document.getElementById('typing-indicator');
+                if (typingIndicator) {
+                    typingIndicator.remove();
+                }
+            }
+
+            // Initialize speech recognition
+            function initSpeechRecognition() {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                
+                if (!SpeechRecognition) {
+                    addMessage("Your browser doesn't support speech recognition. Try Chrome or Edge.", 'ai');
+                    return false;
+                }
+                
+                recognition = new SpeechRecognition();
+                recognition.continuous = false;
+                recognition.interimResults = false;
+                
+                recognition.onstart = function() {
+                    isListening = true;
+                    micBtn.classList.add('mic-active');
+                    userInput.placeholder = "Listening...";
+                };
+                
+                recognition.onresult = function(event) {
+                    const transcript = event.results[0][0].transcript;
+                    userInput.value = transcript;
+                    micBtn.classList.remove('mic-active');
+    
+                    userInput.placeholder = "Type your answer...";
+                    sendMessage();
+                };
+                
+                recognition.onerror = function(event) {
+                    console.error('Speech recognition error', event.error);
+                    micBtn.classList.remove('mic-active');
+        
+                    userInput.placeholder = "Type your answer...";
+                    
+                };
+                
+                recognition.onend = function() {
+                    if (isListening) {
+                        recognition.start(); // Restart if still listening
+                    } else {
+                        micBtn.classList.remove('mic-active');
+                        userInput.placeholder = "Type your answer...";
+                    }
+                };
+                
+                return true;
+            }
+
+            // Toggle speech recognition
+            function toggleSpeechRecognition() {
+                if (!recognition) {
+                    if (!initSpeechRecognition()) return;
+                }
+                
+                if (isListening) {
+                    recognition.stop();
+                    isListening = false;
+                } else {
+                    try {
+                        recognition.start();
+                    } catch (e) {
+                        console.error('Speech recognition error:', e);
+                        addMessage("Couldn't access your microphone. Please check permissions.", 'ai');
+                    }
+                }
+            }
+
+            // Restart conversation
+            // function restartConversation() {
+            //     // Clear chat messages
+            //     chatMessages.innerHTML = '';
+                
+            //     // Generate new user ID
+            //     userID = generateUserId();
+            //     conversationActive = true;
+                
+            //     // Add welcome message
+            //     addMessage("Hello! I'm your Mandatory AI assistant. Let's start fresh.", 'ai');
+                
+            //     // Initialize new conversation
+            //     initConversation();
+            // }
+
+            // Toggle dark mode
+            function toggleDarkMode() {
+                document.documentElement.classList.toggle('dark');
+                const icon = darkModeBtn.querySelector('i');
+                
+                if (document.documentElement.classList.contains('dark')) {
+                    icon.classList.remove('fa-moon');
+                    icon.classList.add('fa-sun');
+                } else {
+                    icon.classList.remove('fa-sun');
+                    icon.classList.add('fa-moon');
+                }
+            }
+
+            // Show help message
+            function showHelp() {
+                addMessage("Here's how to use me:\n\n" +
+                          "1. Speak or type your answers\n" +
+                          "2. Click the microphone button for voice input\n" +
+                          "3. Use the restart button to begin a new conversation\n" +
+                          "4. I'll guide you through questions from the VoiceFlow system", 'ai');
+            }
+
+            // Event listeners
+            sendButton.addEventListener('click', sendMessage);
+            
+            userInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+            
+            micBtn.addEventListener('click', toggleSpeechRecognition);
+            restartBtn.addEventListener('click', restartConversation);
+            darkModeBtn.addEventListener('click', toggleDarkMode);
+            helpBtn.addEventListener('click', showHelp);
+        });
+    </script>
+    </div>
+</body>
+</html>

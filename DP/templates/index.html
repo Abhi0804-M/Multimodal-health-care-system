@@ -1,0 +1,202 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Detection Of Anemia</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5.0, minimum-scale=0.38">
+        
+        <link rel="stylesheet" type="text/css" href="{{url_for('static',filename='/css/style.css')}}">
+    
+    <style>
+    .loader-container {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: #fff;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 9999;
+            }
+            .loader {
+                width: 48px;
+                height: 48px;
+                border: 5px solid #333;
+                border-radius: 50%;
+                border-top-color: transparent;
+                animation: spin 1s linear infinite;
+            }
+            @keyframes spin {
+                100% { transform: rotate(360deg); }
+            }
+            /* Hide the main content initially */
+            .main-content {
+                display: none;
+            }
+            </style>
+            </head>
+    <body>
+      <div class="loader-container">
+            <div class="loader"></div>
+        </div>
+        <header>
+          <a href='/'><video class="logo"  width="100" height="76" autoplay loop muted src="static/img/Green Screen - file (1) 720p.mp4">
+          </video> </a>
+            <ul>
+                <li><a href="/" class="active">Home</a></li>
+                <li><a href="/About">About</a></li>
+                <li><a href="/Work">Work</a></li>
+                <li><a href="/contact">Contact</a></li>
+            </ul>
+        </header>
+        <section>
+            <img src="static/css/stars.png" id="stars">
+            <img src="static/css/moon.png" id="moon">
+            <img src="static/css/mountains_behind.png" id="mountains_behind">
+            <h2 id="text">Detection Of Anemia</h2>
+            <img src="static/css/mountains_front.png" id="mountains_front">
+            
+          </section>
+       
+        <button class="btn" onclick="window.location.href = '/About'">
+    <svg height="24" width="24" fill="#FFFFFF" viewBox="0 0 24 24" data-name="Layer 1" id="Layer_1" class="sparkle">
+        <path d="M10,21.236,6.755,14.745.264,11.5,6.755,8.255,10,1.764l3.245,6.491L19.736,11.5l-6.491,3.245ZM18,21l1.5,3L21,21l3-1.5L21,18l-1.5-3L18,18l-3,1.5ZM19.333,4.667,20.5,7l1.167-2.333L24,3.5,21.667,2.333,20.5,0,19.333,2.333,17,3.5Z"></path>
+    </svg>
+
+    <span class="text" >Explore</span>
+</button>
+       
+        <div class="sec" id="sec">
+            <h2>WHAT IS OUR PROJECT?</h2>
+            <p>In our quest to confront health challenges head-on, we're embarking on an innovative journey where we explore the potential of palm, nail, and eyelid images in detecting anemia. This silent yet impactful condition affects millions worldwide, and we believe that by harnessing the power of image analysis, we can bring about a significant change in its detection and management.<br><br>
+
+              Our approach begins with meticulous data collection, ensuring we capture a diverse range of images representing varying degrees of anemia. These images undergo thorough preprocessing to enhance their quality and prepare them for analysis. Leveraging state-of-the-art Convolutional Neural Networks (CNNs), we delve into the intricate features of these images, aiming to uncover subtle indicators of anemia. Complementing the CNNs, machine learning models step in to interpret these extracted features, ultimately providing us with a predictive tool for identifying individuals at risk of anemia.<br><br>
+              
+              This project isn't just about algorithms and data; it's about making a tangible difference in people's lives. By offering a non-invasive and accessible method for anemia screening, particularly in resource-limited settings, we hope to empower healthcare providers and individuals alike in their fight against this prevalent health condition. With every image analyzed, we're taking a step closer to early intervention, improved management, and ultimately, better health outcomes for all.<br><br>
+            </p>
+        </div>
+        <script>
+            let stars = document.getElementById('stars');
+            let moon = document.getElementById('moon');
+            let mountains_behind = document.getElementById('mountains_behind');
+            let text = document.getElementById('text');
+            let btn = document.getElementById('btn');
+            let mountains_front = document.getElementById('mountains_front');
+            let header = document.querySelector('header');
+
+            window.addEventListener('scroll', function() {
+                let value = window.scrollY;
+                stars.style.left = value * 0.25 + 'px';
+                moon.style.top = value * 1.05 + 'px';
+                mountains_behind.style.top = value * 0.5 + 'px';
+                mountains_front.style.top = value * 0 + 'px';
+                text.style.marginRight = value * 4 + 'px';
+                text.style.marginTop = value * 1.5 + 'px';
+                btn.style.marginTop = value * 1.5 + 'px';
+                header.style.top = value * 0.5 + 'px';
+            })
+        </script>
+            <div onclick="navigateTo('Classify')" class="classify">
+                <div class="classify-front">
+                    <h2>Need Our Help!!</h2>
+                    <p>Get to know Which type of Anemia, you are been Affected based on test results. </p>
+                </div>
+                <div class="classify-back">
+                    <h3>Card Bac</h3>
+                    <p>This is the back side of the card with more information.</p>
+                </div>
+            </div>
+  
+        <div class="container">
+            <div>
+              <div class="content" onclick="navigateTo('camera')">
+                <h2 >PALMS</h2>
+              </div>
+            </div>
+            <div>
+              <div class="content" onclick="navigateTo('upload1')">
+                <h2>EYES</h2>
+              </div>
+            </div>
+            <div>
+              <div class="content" onclick="navigateTo('upload')">
+                <h2>NAILS</h2>
+              </div>
+            </div>
+          </div>
+
+          <script>
+            function navigateTo(page) {
+                window.location.href = '/'+page;
+            }
+            </script>
+     <div class="container1">
+          <div class="parent">
+            <div class="card">
+                <div class="logo1">
+                    <span class="circle circle1"></span>
+                    <span class="circle circle2"></span>
+                    <span class="circle circle3"></span>
+                    <span class="circle circle4"></span>
+                    <span class="circle circle5">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 29.667 31.69" class="svg">
+                            <!-- <path id="Path_6" data-name="Path 6" d="M12.827,1.628A1.561,1.561,0,0,1,14.31,0h2.964a1.561,1.561,0,0,1,1.483,1.628v11.9a9.252,9.252,0,0,1-2.432,6.852q-2.432,2.409-6.963,2.409T2.4,20.452Q0,18.094,0,13.669V1.628A1.561,1.561,0,0,1,1.483,0h2.98A1.561,1.561,0,0,1,5.947,1.628V13.191a5.635,5.635,0,0,0,.85,3.451,3.153,3.153,0,0,0,2.632,1.094,3.032,3.032,0,0,0,2.582-1.076,5.836,5.836,0,0,0,.816-3.486Z" transform="translate(0 0)"></path> -->
+                            <!-- <path id="Path_7" data-name="Path 7" d="M75.207,20.857a1.561,1.561,0,0,1-1.483,1.628h-2.98a1.561,1.561,0,0,1-1.483-1.628V1.628A1.561,1.561,0,0,1,70.743,0h2.98a1.561,1.561,0,0,1,1.483,1.628Z" transform="translate(-45.91 0)"></path>
+                            <path id="Path_8" data-name="Path 8" d="M0,80.018A1.561,1.561,0,0,1,1.483,78.39h26.7a1.561,1.561,0,0,1,1.483,1.628v2.006a1.561,1.561,0,0,1-1.483,1.628H1.483A1.561,1.561,0,0,1,0,82.025Z" transform="translate(0 -51.963)"></path> -->
+                          </svg>
+                    </span>
+    
+                </div>
+                <div class="glass"></div>
+                <div class="content">
+                    <span class="title">Social Media</span>
+                    <span class="text">Follow for more Ideas and Contents. </span>
+                </div>
+                <div class="bottom">
+                    
+                    <div class="social-buttons-container">
+                        <button class="social-button .social-button1">
+                            <svg viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg" class="svg">
+                                <path d="M 9.9980469 3 C 6.1390469 3 3 6.1419531 3 10.001953 L 3 20.001953 C 3 23.860953 6.1419531 27 10.001953 27 L 20.001953 27 C 23.860953 27 27 23.858047 27 19.998047 L 27 9.9980469 C 27 6.1390469 23.858047 3 19.998047 3 L 9.9980469 3 z M 22 7 C 22.552 7 23 7.448 23 8 C 23 8.552 22.552 9 22 9 C 21.448 9 21 8.552 21 8 C 21 7.448 21.448 7 22 7 z M 15 9 C 18.309 9 21 11.691 21 15 C 21 18.309 18.309 21 15 21 C 11.691 21 9 18.309 9 15 C 9 11.691 11.691 9 15 9 z M 15 11 A 4 4 0 0 0 11 15 A 4 4 0 0 0 15 19 A 4 4 0 0 0 19 15 A 4 4 0 0 0 15 11 z"></path>
+                              </svg></button>
+                          <button class="social-button .social-button2">
+                            <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" class="svg">
+                                <path d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865z"></path>
+                              </svg>
+                          </button>
+                          <a class="social-button .social-button3"  >
+                            <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" class="svg">
+                                <path d="M20.9716667,33.5527338 L25.001,33.5527338 L25.001,27.1328007 C25.001,25.439485 25.3213333,23.7988354 27.4206667,23.7988354 C29.491,23.7988354 29.517,25.7351486 29.517,27.2404662 L29.517,33.5527338 L33.5506667,33.5527338 L33.5506667,26.4341413 C33.5506667,22.9381777 32.796,20.2505391 28.711,20.2505391 C26.7483333,20.2505391 25.432,21.3265278 24.8943333,22.3471839 L24.839,22.3471839 L24.839,20.5725357 L20.9716667,20.5725357 L20.9716667,33.5527338 Z M16.423,14.1202696 C15.1273333,14.1202696 14.0823333,15.1682587 14.0823333,16.4595785 C14.0823333,17.7508984 15.1273333,18.7992208 16.423,18.7992208 C17.7133333,18.7992208 18.761,17.7508984 18.761,16.4595785 C18.761,15.1682587 17.7133333,14.1202696 16.423,14.1202696 L16.423,14.1202696 Z M14.4026667,33.5527338 L18.4406667,33.5527338 L18.4406667,20.5725357 L14.4026667,20.5725357 L14.4026667,33.5527338 Z M9.76633333,40 C8.79033333,40 8,39.2090082 8,38.2336851 L8,9.76631493 C8,8.79065843 8.79033333,8 9.76633333,8 L38.234,8 C39.2093333,8 40,8.79065843 40,9.76631493 L40,38.2336851 C40,39.2090082 39.2093333,40 38.234,40 L9.76633333,40 Z"></path>
+                              </svg>
+                            </a>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="content">
+          <h2>Connect With Us</h2>
+          <p> <br> Have questions, comments, or just want to say hello? We'd love to hear from you! Feel free to reach out to us through any of the following SocialMedia.<br> <br> Follow us on social media to stay updated on the latest news, events, and promotions. We look forward to connecting with you!</p>
+          
+      </div>
+     </div>
+     <div class="footer"style="color: white;">
+      &copy; 2025 Anemia Detection Project. All rights reserved.
+      </div>
+          <script src="./script.js"></script>
+          <script>
+            // Show loading animation for 10 seconds then redirect to error page
+            setTimeout(function() {
+                document.querySelector('.loader-container').style.display = 'none';
+                document.querySelector('.main-content').style.display = 'block';
+            }, 10000);
+
+            // If page loads successfully before timeout, hide loader and show content
+            window.onload = function() {
+                document.querySelector('.loader-container').style.display = 'none';
+                document.querySelector('.main-content').style.display = 'block';
+            };
+        </script>
+        </body>        
+</html>
